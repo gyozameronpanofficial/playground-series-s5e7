@@ -1,0 +1,456 @@
+# # Kaggle Competition .gitignore
+
+# # =============================================================================
+# # データファイル (Data Files)
+# # =============================================================================
+
+# # 元データ（サイズが大きいため除外）
+# # data/raw/*.csv
+# data/raw/*.zip
+# data/raw/*.json
+# data/raw/*.parquet
+# data/raw/*.feather
+# data/raw/*.pickle
+# data/raw/*.pkl
+
+# # 処理済みデータ（サイズが大きい場合は除外）
+# data/processed/*.csv
+# data/processed/*.parquet
+# data/processed/*.feather
+# data/processed/*.h5
+# data/processed/*.hdf5
+
+# # 外部データ
+# data/external/*.csv
+# data/external/*.json
+# data/external/*.zip
+
+# # 中間データ
+# data/interim/*.csv
+# data/interim/*.parquet
+
+# =============================================================================
+# モデルファイル (Model Files)
+# =============================================================================
+
+# 学習済みモデル
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.hdf5
+models/*.pb
+models/*.pth
+models/*.pt
+models/*.ckpt
+models/*.model
+models/*.bin
+
+# モデル関連ディレクトリ
+models/checkpoints/
+models/logs/
+models/tensorboard/
+
+# =============================================================================
+# 提出ファイル (Submission Files)
+# =============================================================================
+
+# 提出用CSVファイル（最終版以外）
+submissions/*.csv
+!submissions/final_submission.csv
+!submissions/best_submission.csv
+
+# =============================================================================
+# Jupyter Notebook
+# =============================================================================
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Jupyter Notebook outputs (optional - コメントアウトして出力を残すことも可能)
+# *.ipynb
+
+# =============================================================================
+# Python
+# =============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# =============================================================================
+# R
+# =============================================================================
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+# =============================================================================
+# システムファイル (System Files)
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS Icon files
+Icon?
+
+# macOS Thumbnails
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Windows Dump file
+*.stackdump
+
+# Windows folder config file
+[Dd]esktop.ini
+
+# Windows Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# Linux
+*~
+
+# =============================================================================
+# IDE・エディタ (IDE & Editors)
+# =============================================================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# 実験・ログファイル (Experiments & Logs)
+# =============================================================================
+
+# ログファイル
+*.log
+logs/
+experiments/logs/
+experiments/*.log
+
+# 実験結果（CSV形式）
+experiments/results/*.csv
+experiments/results/*.json
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Weights & Biases
+wandb/
+
+# TensorBoard
+runs/
+tensorboard/
+
+# =============================================================================
+# 一時ファイル (Temporary Files)
+# =============================================================================
+
+# 一時ファイル
+*.tmp
+*.temp
+tmp/
+temp/
+
+# バックアップファイル
+*.bak
+*.backup
+
+# キャッシュファイル
+cache/
+.cache/
+
+# =============================================================================
+# Kaggle固有 (Kaggle Specific)
+# =============================================================================
+
+# Kaggle API認証情報
+kaggle.json
+
+# Kaggle入力データディレクトリ
+/input/
+
+# Kaggle作業ディレクトリ
+/working/
+
+# =============================================================================
+# GPU・CUDA関連 (GPU & CUDA)
+# =============================================================================
+
+# CUDA cache
+.nv_cache/
+
+# =============================================================================
+# その他 (Others)
+# =============================================================================
+
+# 圧縮ファイル
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 画像ファイル（大容量の場合）
+# *.png
+# *.jpg
+# *.jpeg
+# *.gif
+
+# 動画ファイル
+*.mp4
+*.avi
+*.mov
+
+# オーディオファイル
+*.mp3
+*.wav
+
+# ドキュメントファイル（大容量の場合）
+# *.pdf
+# *.docx
+# *.pptx
+
+# 設定ファイル（プロジェクト固有）
+config/local_config.py
+config/secrets.py
+
+# 実行結果
+output/
+results/
+
+# プロファイル結果
+*.prof

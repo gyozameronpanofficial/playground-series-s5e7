@@ -1,79 +1,3 @@
-# # Kaggle Competition .gitignore
-
-# # =============================================================================
-# # データファイル (Data Files)
-# # =============================================================================
-
-# # 元データ（サイズが大きいため除外）
-# # data/raw/*.csv
-# data/raw/*.zip
-# data/raw/*.json
-# data/raw/*.parquet
-# data/raw/*.feather
-# data/raw/*.pickle
-# data/raw/*.pkl
-
-# # 処理済みデータ（サイズが大きい場合は除外）
-# data/processed/*.csv
-# data/processed/*.parquet
-# data/processed/*.feather
-# data/processed/*.h5
-# data/processed/*.hdf5
-
-# # 外部データ
-# data/external/*.csv
-# data/external/*.json
-# data/external/*.zip
-
-# # 中間データ
-# data/interim/*.csv
-# data/interim/*.parquet
-
-# =============================================================================
-# モデルファイル (Model Files)
-# =============================================================================
-
-# 学習済みモデル
-models/*.pkl
-models/*.joblib
-models/*.h5
-models/*.hdf5
-models/*.pb
-models/*.pth
-models/*.pt
-models/*.ckpt
-models/*.model
-models/*.bin
-
-# モデル関連ディレクトリ
-models/checkpoints/
-models/logs/
-models/tensorboard/
-
-# =============================================================================
-# 提出ファイル (Submission Files)
-# =============================================================================
-
-# 提出用CSVファイル（最終版以外）
-submissions/*.csv
-!submissions/final_submission.csv
-!submissions/best_submission.csv
-
-# =============================================================================
-# Jupyter Notebook
-# =============================================================================
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-*/.ipynb_checkpoints/*
-
-# Jupyter Notebook outputs (optional - コメントアウトして出力を残すことも可能)
-# *.ipynb
-
-# =============================================================================
-# Python
-# =============================================================================
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -103,6 +27,8 @@ share/python-wheels/
 MANIFEST
 
 # PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -157,18 +83,33 @@ profile_default/
 ipython_config.py
 
 # pyenv
-.python-version
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
 
 # pipenv
-Pipfile.lock
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
 
 # poetry
-poetry.lock
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poetry.lock
 
 # pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#pdm.lock
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
+#   https://pdm.fming.dev/#use-with-ide
 .pdm.toml
 
-# PEP 582
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/
 
 # Celery stuff
@@ -212,245 +153,67 @@ dmypy.json
 cython_debug/
 
 # PyCharm
+#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#  be added to the global gitignore or merged into this project gitignore.  For a PyCharm
+#  project, it is common to exclude the module files, since they will be recreated, and may cause churn.  Uncomment if using
+# *.iml
+# *.ipr
+
+# CMake
+cmake-build-*/
+
+# Mongo Explorer plugin
 .idea/
 
-# =============================================================================
-# R
-# =============================================================================
+# File-based project format
+*.iws
 
-# History files
-.Rhistory
-.Rapp.history
+# IntelliJ
+out/
 
-# Session Data files
-.RData
-.RDataTmp
+# mpeltonen/sbt-idea plugin
+.idea_modules/
 
-# User-specific files
-.Ruserdata
+# JIRA plugin
+atlassian-ide-plugin.xml
 
-# Example code in package build process
-*-Ex.R
+# Cursive Clojure plugin
+.nrepl-port
 
-# Output files from R CMD build
-/*.tar.gz
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
 
-# Output files from R CMD check
-/*.Rcheck/
-
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
-
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
-
-# R Environment Variables
-.Renviron
-
-# pkgdown site
-docs/
-
-# translation temp files
-po/*~
-
-# RStudio Connect folder
-rsconnect/
-
-# =============================================================================
-# システムファイル (System Files)
-# =============================================================================
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# macOS Icon files
-Icon?
-
-# macOS Thumbnails
-._*
-
-# Windows
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-
-# Windows Dump file
-*.stackdump
-
-# Windows folder config file
-[Dd]esktop.ini
-
-# Windows Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# Linux
-*~
-
-# =============================================================================
-# IDE・エディタ (IDE & Editors)
-# =============================================================================
-
-# Visual Studio Code
+# Editor-based Rest Client
 .vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
 
-# Local History for Visual Studio Code
-.history/
+# idea folder, uncomment if you have IntelliJ IDEA Community installed
+# .idea
 
-# Built Visual Studio Code Extensions
-*.vsix
+# Large data files
+data/processed/*_ngrams.csv
+data/processed/*_ngram*.csv
+*.csv.gz
+*.pkl
+*.pickle
 
-# PyCharm
-.idea/
+# Model files
+models/
+*.h5
+*.model
+*.joblib
 
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
+# CatBoost info
+catboost_info/
 
-# Vim
-*.swp
-*.swo
-*~
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# =============================================================================
-# 実験・ログファイル (Experiments & Logs)
-# =============================================================================
-
-# ログファイル
-*.log
-logs/
-experiments/logs/
-experiments/*.log
-
-# 実験結果（CSV形式）
-experiments/results/*.csv
-experiments/results/*.json
-
-# MLflow
-mlruns/
-mlartifacts/
-
-# Weights & Biases
-wandb/
-
-# TensorBoard
-runs/
-tensorboard/
-
-# =============================================================================
-# 一時ファイル (Temporary Files)
-# =============================================================================
-
-# 一時ファイル
+# Temporary files
 *.tmp
 *.temp
-tmp/
-temp/
+*_temp*
+*_tmp*
 
-# バックアップファイル
-*.bak
-*.backup
-
-# キャッシュファイル
-cache/
-.cache/
-
-# =============================================================================
-# Kaggle固有 (Kaggle Specific)
-# =============================================================================
-
-# Kaggle API認証情報
-kaggle.json
-
-# Kaggle入力データディレクトリ
-/input/
-
-# Kaggle作業ディレクトリ
-/working/
-
-# =============================================================================
-# GPU・CUDA関連 (GPU & CUDA)
-# =============================================================================
-
-# CUDA cache
-.nv_cache/
-
-# =============================================================================
-# その他 (Others)
-# =============================================================================
-
-# 圧縮ファイル
-*.zip
-*.tar.gz
-*.rar
-*.7z
-
-# 画像ファイル（大容量の場合）
-# *.png
-# *.jpg
-# *.jpeg
-# *.gif
-
-# 動画ファイル
-*.mp4
-*.avi
-*.mov
-
-# オーディオファイル
-*.mp3
-*.wav
-
-# ドキュメントファイル（大容量の場合）
-# *.pdf
-# *.docx
-# *.pptx
-
-# 設定ファイル（プロジェクト固有）
-config/local_config.py
-config/secrets.py
-
-# 実行結果
-output/
-results/
-
-# プロファイル結果
-*.prof
+# OS specific
+.DS_Store
+Thumbs.db

@@ -199,6 +199,10 @@ data/processed/*_ngram*.csv
 *.pkl
 *.pickle
 
+# Submission files (keep private)
+submissions/
+!submissions/.gitkeep
+
 # Model files
 models/
 *.h5

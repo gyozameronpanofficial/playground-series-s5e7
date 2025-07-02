@@ -177,14 +177,242 @@ graph LR
 
 ---
 
-## 🚀 クイックスタート
+## 🚀 チーム向けセットアップガイド
 
-### ✅ 前提条件
-- [ ] **Python 3.9+** がインストール済み
-- [ ] **Git** がインストール済み
-- [ ] **Kaggle API** が設定済み
+### 🎯 初回セットアップ（Git未インストールの場合）
 
-### 📦 セットアップ手順
+<details>
+<summary><b>🔧 Step 1: 必要なツールのインストール</b></summary>
+
+#### 1️⃣ Git のインストール
+
+**Windows の場合:**
+1. [Git for Windows](https://gitforwindows.org/) にアクセス
+2. "Download" ボタンをクリック
+3. ダウンロードした `.exe` ファイルを実行
+4. インストール中は基本的に「Next」で進む
+5. インストール完了後、コマンドプロンプトまたはPowerShellを開く
+6. 確認: `git --version` と入力してバージョンが表示されればOK
+
+**macOS の場合:**
+```bash
+# Homebrewでインストール（推奨）
+brew install git
+
+# または、公式インストーラーを使用
+# https://git-scm.com/download/mac からダウンロード
+```
+
+**Linux (Ubuntu/Debian) の場合:**
+```bash
+sudo apt update
+sudo apt install git
+```
+
+#### 2️⃣ Python 3.9+ のインストール確認
+
+```bash
+# バージョン確認
+python --version
+# または
+python3 --version
+
+# 3.9以上でない場合は公式サイトからインストール
+# https://www.python.org/downloads/
+```
+
+#### 3️⃣ Kaggle API の設定
+
+1. [Kaggle](https://www.kaggle.com) にログイン
+2. アカウント設定 → API → "Create New API Token"
+3. `kaggle.json` ファイルがダウンロードされる
+4. ファイルを適切な場所に配置:
+   - **Windows**: `C:\Users\{username}\.kaggle\kaggle.json`
+   - **macOS/Linux**: `~/.kaggle/kaggle.json`
+
+```bash
+# Windows (PowerShell)
+mkdir $env:USERPROFILE\.kaggle
+move .\kaggle.json $env:USERPROFILE\.kaggle\
+
+# macOS/Linux
+mkdir -p ~/.kaggle
+mv kaggle.json ~/.kaggle/
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+</details>
+
+<details>
+<summary><b>📂 Step 2: リポジトリのクローンと初期設定</b></summary>
+
+#### 1️⃣ Git の初期設定（初回のみ）
+
+```bash
+# ユーザー名とメールアドレスの設定
+git config --global user.name "あなたの名前"
+git config --global user.email "your.email@example.com"
+
+# 設定確認
+git config --global --list
+```
+
+#### 2️⃣ プロジェクトをクローン
+
+```bash
+# プロジェクトをクローン（HTTPS方式・推奨）
+git clone https://github.com/YOUR_USERNAME/kaggle-playground-s5e7.git
+
+# プロジェクトディレクトリに移動
+cd kaggle-playground-s5e7
+
+# リモートリポジトリの確認
+git remote -v
+```
+
+#### 3️⃣ 作業ブランチの作成
+
+```bash
+# 最新の変更を取得
+git pull origin main
+
+# 自分専用の作業ブランチを作成
+git checkout -b feature/your-name-setup
+
+# 例:
+# git checkout -b feature/tanaka-setup
+# git checkout -b feature/yamada-analysis
+```
+
+</details>
+
+<details>
+<summary><b>🐍 Step 3: Python環境のセットアップ</b></summary>
+
+#### 1️⃣ 仮想環境の作成とアクティベート
+
+```bash
+# 仮想環境を作成
+python -m venv venv
+
+# 仮想環境をアクティベート
+# Windows (コマンドプロンプト)
+venv\Scripts\activate
+
+# Windows (PowerShell)
+venv\Scripts\Activate.ps1
+
+# macOS/Linux
+source venv/bin/activate
+
+# アクティベート確認（プロンプトに(venv)が表示される）
+```
+
+#### 2️⃣ 依存関係のインストール
+
+```bash
+# pip をアップデート
+python -m pip install --upgrade pip
+
+# プロジェクトの依存関係をインストール
+pip install -r requirements.txt
+
+# インストール確認
+pip list
+```
+
+#### 3️⃣ Jupyter Lab のセットアップ（オプション）
+
+```bash
+# Jupyter Lab を起動
+jupyter lab
+
+# ブラウザで http://localhost:8888 が開けばOK
+```
+
+</details>
+
+<details>
+<summary><b>📊 Step 4: データの取得と配置</b></summary>
+
+#### 1️⃣ Kaggle API の動作確認
+
+```bash
+# Kaggle API の動作テスト
+kaggle competitions list
+
+# エラーが出る場合は Step 1 の Kaggle API 設定を再確認
+```
+
+#### 2️⃣ コンペティションデータのダウンロード
+
+```bash
+# コンペティションデータをダウンロード
+kaggle competitions download -c playground-series-s5e7
+
+# Windows の場合
+Expand-Archive playground-series-s5e7.zip -DestinationPath data\raw\
+
+# macOS/Linux の場合
+unzip playground-series-s5e7.zip -d data/raw/
+
+# ファイル確認
+ls data/raw/
+# 以下のファイルがあることを確認:
+# - train.csv
+# - test.csv
+# - sample_submission.csv
+```
+
+</details>
+
+<details>
+<summary><b>✅ Step 5: セットアップの確認</b></summary>
+
+#### 1️⃣ 環境の動作確認
+
+```bash
+# Python とライブラリの確認
+python -c "import pandas as pd; import numpy as np; import sklearn; print('✅ All libraries loaded successfully!')"
+
+# Git の動作確認
+git status
+
+# Kaggle API の確認
+kaggle competitions list -s playground-series-s5e7
+```
+
+#### 2️⃣ 初回コミット（確認用）
+
+```bash
+# セットアップ完了を記録
+echo "Setup completed by [あなたの名前] on $(date)" >> setup_log.txt
+
+# 変更をステージング
+git add setup_log.txt
+
+# コミット
+git commit -m "setup: Complete initial setup by [あなたの名前]"
+
+# リモートにプッシュ
+git push origin feature/your-name-setup
+```
+
+#### 3️⃣ 動作テスト
+
+```bash
+# 簡単なデータ読み込みテスト
+python -c "
+import pandas as pd
+train = pd.read_csv('data/raw/train.csv')
+print(f'✅ Training data loaded: {train.shape}')
+print(f'✅ Columns: {list(train.columns)}')
+"
+```
+
+</details>
+
+### 🚀 クイックスタート（既にセットアップ済みの場合）
 
 ```bash
 # 1️⃣ リポジトリのクローン
@@ -202,6 +430,58 @@ pip install -r requirements.txt
 kaggle competitions download -c playground-series-s5e7
 unzip playground-series-s5e7.zip -d data/raw/
 ```
+
+### 🆘 よくある問題と解決方法
+
+<details>
+<summary><b>❌ トラブルシューティング</b></summary>
+
+#### Git関連の問題
+
+**問題**: `git: command not found`
+```bash
+# 解決: Gitを再インストール
+# Windowsの場合は https://gitforwindows.org/ から
+# macOSの場合は brew install git
+```
+
+**問題**: `Permission denied (publickey)`
+```bash
+# 解決: HTTPS でクローンし直す
+git clone https://github.com/USERNAME/REPO.git
+```
+
+#### Python関連の問題
+
+**問題**: `python: command not found`
+```bash
+# 解決: python3 を試す
+python3 --version
+python3 -m venv venv
+```
+
+**問題**: `pip install` でエラー
+```bash
+# 解決: pip をアップデート
+python -m pip install --upgrade pip
+```
+
+#### Kaggle API関連の問題
+
+**問題**: `OSError: Could not find kaggle.json`
+```bash
+# 解決: kaggle.json の配置場所を確認
+# Windows: C:\Users\{username}\.kaggle\kaggle.json
+# macOS/Linux: ~/.kaggle/kaggle.json
+```
+
+**問題**: `403 Forbidden` エラー
+```bash
+# 解決: コンペティションのルールに同意
+# ブラウザでコンペティションページにアクセスして「Join Competition」
+```
+
+</details>
 
 ---
 

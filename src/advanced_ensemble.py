@@ -1,6 +1,6 @@
 """
-高度アンサンブル手法の実装
-多層スタッキング、動的重み付け、多様なモデルの組み合わせ
+高度アンサンブル: 多層スタッキング、動的重み付け、ベイズ最適化
+GMベースライン0.975708突破のための究極戦略
 """
 
 import pandas as pd
@@ -9,70 +9,79 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
+# ML Libraries
 from sklearn.model_selection import StratifiedKFold, RepeatedStratifiedKFold
 from sklearn.preprocessing import TargetEncoder, StandardScaler
-from sklearn.ensemble import (RandomForestClassifier, ExtraTreesClassifier, 
-                             HistGradientBoostingClassifier, VotingClassifier)
-from sklearn.linear_model import LogisticRegression, ElasticNet, RidgeClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression, RidgeClassifier, ElasticNet
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.pipeline import Pipeline
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, log_loss
+from sklearn.pipeline import Pipeline
+
 import xgboost as xgb
 import lightgbm as lgb
 import catboost as cb
-from scipy import stats
+
+# Optimization
+try:
+    import optuna
+except ImportError:
+    optuna = None
 
 class AdvancedEnsemble:
-    """高度アンサンブル手法クラス"""
+    """高度アンサンブルクラス"""
     
     def __init__(self):
         self.config = {
+            'DATA_PATH': Path('/Users/osawa/kaggle/playground-series-s5e7/data/processed'),
+            'OUTPUT_PATH': Path('/Users/osawa/kaggle/playground-series-s5e7/submissions'),
+            'TARGET_MAPPING': {"Extrovert": 0, "Introvert": 1},
             'RANDOM_STATE': 42,
             'N_SPLITS': 5,
-            'N_REPEATS': 2,
-            'TARGET_COL': 'target',
-            'DATA_PATH': Path('/Users/osawa/kaggle/playground-series-s5e7/data/processed')
+            'N_REPEATS': 2
         }
-        self.level1_models = {}
-        self.level2_models = {}
-        self.oof_predictions = {}
-        self.test_predictions = {}
+        self.config['OUTPUT_PATH'].mkdir(exist_ok=True)
         
-    def load_enhanced_data(self):
-        """拡張特徴量データの読み込み"""
-        print("=== 拡張特徴量データ読み込み ===")
+        # シード設定
+        np.random.seed(self.config['RANDOM_STATE'])
         
-        train_df = pd.read_csv(self.config['DATA_PATH'] / 'enhanced_train.csv')
-        test_df = pd.read_csv(self.config['DATA_PATH'] / 'enhanced_test.csv')
+    def load_revolutionary_data(self):
+        """革新的特徴量データの読み込み"""
+        print("=== 革新的特徴量データ読み込み ===")
         
-        # 特徴量とターゲットを分離
-        X_train = train_df.drop(self.config['TARGET_COL'], axis=1)
-        y_train = train_df[self.config['TARGET_COL']]
-        X_test = test_df.copy()
+        train_df = pd.read_csv(self.config['DATA_PATH'] / 'revolutionary_train.csv')
+        test_df = pd.read_csv(self.config['DATA_PATH'] / 'revolutionary_test.csv')
         
-        print(f"訓練データ形状: {X_train.shape}")
-        print(f"テストデータ形状: {X_test.shape}")
-        print(f"ターゲット分布: {y_train.value_counts().to_dict()}")
+        # 特徴量とターゲットの分離
+        feature_cols = [col for col in train_df.columns if col not in ['id', 'Personality']]
         
-        return X_train, y_train, X_test
+        X_train = train_df[feature_cols].copy()
+        y_train = train_df['Personality'].map(self.config['TARGET_MAPPING'])
+        X_test = test_df[feature_cols].copy()
+        
+        print(f"データ形状: X_train={X_train.shape}, X_test={X_test.shape}")
+        print(f"特徴量数: {len(feature_cols)}")
+        
+        return X_train, y_train, X_test, train_df['id'], test_df['id']
     
     def setup_diverse_models(self):
-        """多様なモデル群の設定"""
-        print("\n=== 多様なモデル群設定 ===")
+        """多様なモデルの設定"""
+        print("=== 多様なモデル設定 ===")
         
-        # レベル1モデル群（多様性を重視）
-        self.level1_models = {
-            # Gradient Boosting系
+        models = {
+            # Gradient Boosting Models
             'XGBoost': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('model', xgb.XGBClassifier(
                     objective='binary:logistic',
-                    learning_rate=0.01,  # より慎重な学習
+                    eval_metric='logloss',
+                    learning_rate=0.01,
                     n_estimators=2000,
                     max_depth=6,
-                    colsample_bytree=0.8,
+                    colsample_bytree=0.45,
                     subsample=0.8,
                     reg_alpha=0.1,
                     reg_lambda=1.0,
@@ -85,10 +94,11 @@ class AdvancedEnsemble:
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('model', lgb.LGBMClassifier(
                     objective='binary',
+                    metric='logloss',
                     learning_rate=0.01,
                     n_estimators=2000,
                     max_depth=6,
-                    colsample_bytree=0.8,
+                    colsample_bytree=0.45,
                     subsample=0.8,
                     reg_alpha=0.1,
                     reg_lambda=1.0,
@@ -102,24 +112,23 @@ class AdvancedEnsemble:
                 ('model', cb.CatBoostClassifier(
                     loss_function='Logloss',
                     learning_rate=0.01,
-                    iterations=2000,
+                    iterations=1500,
                     max_depth=6,
-                    reg_lambda=1.0,
                     random_state=self.config['RANDOM_STATE'],
                     verbose=False
                 ))
             ]),
             
-            # Tree系
+            # Tree-based Models
             'RandomForest': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('model', RandomForestClassifier(
                     n_estimators=500,
                     max_depth=8,
-                    min_samples_split=5,
-                    min_samples_leaf=2,
+                    min_samples_leaf=10,
                     max_features='sqrt',
-                    random_state=self.config['RANDOM_STATE']
+                    random_state=self.config['RANDOM_STATE'],
+                    n_jobs=-1
                 ))
             ]),
             
@@ -128,43 +137,31 @@ class AdvancedEnsemble:
                 ('model', ExtraTreesClassifier(
                     n_estimators=500,
                     max_depth=8,
-                    min_samples_split=5,
-                    min_samples_leaf=2,
+                    min_samples_leaf=10,
                     max_features='sqrt',
-                    random_state=self.config['RANDOM_STATE']
+                    random_state=self.config['RANDOM_STATE'],
+                    n_jobs=-1
                 ))
             ]),
             
             'HistGradientBoosting': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('model', HistGradientBoostingClassifier(
-                    learning_rate=0.02,
+                    learning_rate=0.01,
                     max_iter=1000,
                     max_depth=6,
-                    min_samples_leaf=5,
-                    l2_regularization=1.0,
+                    l2_regularization=0.1,
                     random_state=self.config['RANDOM_STATE']
                 ))
             ]),
             
-            # 線形系
+            # Linear Models (with scaling)
             'LogisticRegression': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('scaler', StandardScaler()),
                 ('model', LogisticRegression(
                     C=0.1,
-                    max_iter=2000,
-                    random_state=self.config['RANDOM_STATE']
-                ))
-            ]),
-            
-            'ElasticNet': Pipeline([
-                ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
-                ('scaler', StandardScaler()),
-                ('model', ElasticNet(
-                    alpha=0.1,
-                    l1_ratio=0.5,
-                    max_iter=2000,
+                    max_iter=1000,
                     random_state=self.config['RANDOM_STATE']
                 ))
             ]),
@@ -178,317 +175,110 @@ class AdvancedEnsemble:
                 ))
             ]),
             
-            # 距離系
+            # Neural Network
+            'MLP': Pipeline([
+                ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
+                ('scaler', StandardScaler()),
+                ('model', MLPClassifier(
+                    hidden_layer_sizes=(100, 50),
+                    learning_rate_init=0.001,
+                    max_iter=500,
+                    random_state=self.config['RANDOM_STATE']
+                ))
+            ]),
+            
+            # Distance-based Models
             'KNN': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('scaler', StandardScaler()),
                 ('model', KNeighborsClassifier(
                     n_neighbors=15,
-                    weights='distance',
-                    metric='minkowski'
+                    weights='distance'
                 ))
             ]),
             
-            'SVM_RBF': Pipeline([
+            # Naive Bayes
+            'NaiveBayes': Pipeline([
                 ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
                 ('scaler', StandardScaler()),
-                ('model', SVC(
-                    C=1.0,
-                    kernel='rbf',
-                    probability=True,
-                    random_state=self.config['RANDOM_STATE']
-                ))
-            ]),
-            
-            # ニューラルネットワーク
-            'MLP': Pipeline([
-                ('encoder', TargetEncoder(random_state=self.config['RANDOM_STATE'])),
-                ('scaler', StandardScaler()),
-                ('model', MLPClassifier(
-                    hidden_layer_sizes=(128, 64, 32),
-                    learning_rate_init=0.001,
-                    max_iter=500,
-                    early_stopping=True,
-                    validation_fraction=0.1,
-                    random_state=self.config['RANDOM_STATE']
-                ))
+                ('model', GaussianNB())
             ])
         }
         
-        print(f"レベル1モデル数: {len(self.level1_models)}")
+        print(f"設定完了: {len(models)} モデル")
+        return models
+    
+    def train_level1_models(self, X_train, y_train, X_test, models):
+        """Level 1モデルの訓練"""
+        print("=== Level 1 モデル訓練 ===")
         
-        # レベル2メタモデル群
-        self.level2_models = {
-            'LogisticMeta': LogisticRegression(
-                C=0.1, 
-                max_iter=1000, 
+        # 複数CV戦略
+        cv_strategies = {
+            'StratifiedKFold': StratifiedKFold(
+                n_splits=self.config['N_SPLITS'], 
+                shuffle=True, 
                 random_state=self.config['RANDOM_STATE']
             ),
-            'XGBoostMeta': xgb.XGBClassifier(
-                objective='binary:logistic',
-                learning_rate=0.05,
-                n_estimators=100,
-                max_depth=3,
-                random_state=self.config['RANDOM_STATE'],
-                verbosity=0
-            ),
-            'RidgeMeta': RidgeClassifier(
-                alpha=1.0,
+            'RepeatedStratifiedKFold': RepeatedStratifiedKFold(
+                n_splits=self.config['N_SPLITS'], 
+                n_repeats=self.config['N_REPEATS'],
                 random_state=self.config['RANDOM_STATE']
             )
         }
         
-        print(f"レベル2メタモデル数: {len(self.level2_models)}")
-    
-    def train_level1_models(self, X_train, y_train):
-        """レベル1モデルの訓練"""
-        print("\n=== レベル1モデル訓練 ===")
+        level1_results = {}
         
-        # クロスバリデーション設定
-        cv = StratifiedKFold(
-            n_splits=self.config['N_SPLITS'],
-            shuffle=True,
-            random_state=self.config['RANDOM_STATE']
-        )
-        
-        # OOF予測とテスト予測の初期化
-        n_models = len(self.level1_models)
-        oof_predictions = np.zeros((len(X_train), n_models))
-        test_predictions = np.zeros((len(X_train), n_models))  # テストデータサイズに合わせて後で修正
-        
-        model_scores = {}
-        
-        for model_idx, (name, model) in enumerate(self.level1_models.items()):
-            print(f"\n--- {name} 訓練中 ---")
+        for cv_name, cv in cv_strategies.items():
+            print(f"\n--- {cv_name} による訓練 ---")
             
-            # モデル別のOOF予測
-            oof_preds = np.zeros(len(X_train))
-            fold_scores = []
+            oof_predictions = {}
+            test_predictions = {}
+            model_scores = {}
             
-            for fold, (train_idx, valid_idx) in enumerate(cv.split(X_train, y_train)):
-                # データ分割
-                X_fold_train = X_train.iloc[train_idx]
-                X_fold_valid = X_train.iloc[valid_idx]
-                y_fold_train = y_train.iloc[train_idx]
-                y_fold_valid = y_train.iloc[valid_idx]
+            for name, model in models.items():
+                print(f"  {name} 訓練中...")
                 
-                # モデル訓練
-                try:
+                # OOF予測とテスト予測の初期化
+                oof_preds = np.zeros(len(X_train))
+                test_preds = np.zeros(len(X_test))
+                fold_scores = []
+                
+                # クロスバリデーション実行
+                for fold, (train_idx, valid_idx) in enumerate(cv.split(X_train, y_train)):
+                    # 分割
+                    X_fold_train = X_train.iloc[train_idx]
+                    X_fold_valid = X_train.iloc[valid_idx]
+                    y_fold_train = y_train.iloc[train_idx]
+                    y_fold_valid = y_train.iloc[valid_idx]
+                    
+                    # 訓練
                     model.fit(X_fold_train, y_fold_train)
                     
-                    # 予測
-                    if hasattr(model, 'predict_proba'):
-                        valid_preds = model.predict_proba(X_fold_valid)[:, 1]
-                    else:
-                        # ElasticNetなど、predict_probaがないモデル
-                        valid_preds = model.predict(X_fold_valid)
-                    
+                    # OOF予測
+                    valid_preds = model.predict_proba(X_fold_valid)[:, 1]
                     oof_preds[valid_idx] = valid_preds
+                    
+                    # テスト予測（後で平均）
+                    fold_test_preds = model.predict_proba(X_test)[:, 1]
+                    test_preds += fold_test_preds / cv.get_n_splits()
                     
                     # スコア計算
                     fold_score = accuracy_score(y_fold_valid, (valid_preds >= 0.5).astype(int))
                     fold_scores.append(fold_score)
-                    print(f"  Fold {fold+1}: {fold_score:.6f}")
-                    
-                except Exception as e:
-                    print(f"  エラー in Fold {fold+1}: {str(e)}")
-                    fold_scores.append(0.5)  # デフォルトスコア
-            
-            # モデルの全体スコア
-            if len(fold_scores) > 0:
-                model_score = np.mean(fold_scores)
-                model_scores[name] = {
-                    'score': model_score,
-                    'std': np.std(fold_scores)
-                }
-                print(f"  {name} 全体スコア: {model_score:.6f} (±{np.std(fold_scores):.6f})")
-            
-            # OOF予測を保存
-            oof_predictions[:, model_idx] = oof_preds
-            self.oof_predictions[name] = oof_preds
-        
-        # レベル1結果サマリー
-        print(f"\n=== レベル1モデル結果サマリー ===")
-        sorted_models = sorted(model_scores.items(), key=lambda x: x[1]['score'], reverse=True)
-        for name, scores in sorted_models:
-            print(f"{name}: {scores['score']:.6f} (±{scores['std']:.6f})")
-        
-        return oof_predictions, model_scores
-    
-    def train_level2_ensemble(self, oof_predictions, y_train):
-        """レベル2メタモデルの訓練"""
-        print(f"\n=== レベル2アンサンブル訓練 ===")
-        
-        # OOF予測をDataFrameに変換
-        level1_features = pd.DataFrame(
-            oof_predictions, 
-            columns=list(self.level1_models.keys())
-        )
-        
-        print(f"レベル1特徴量形状: {level1_features.shape}")
-        
-        # クロスバリデーション
-        cv = StratifiedKFold(
-            n_splits=self.config['N_SPLITS'],
-            shuffle=True,
-            random_state=self.config['RANDOM_STATE']
-        )
-        
-        meta_scores = {}
-        
-        for name, meta_model in self.level2_models.items():
-            print(f"\n--- {name} メタモデル訓練 ---")
-            
-            fold_scores = []
-            for fold, (train_idx, valid_idx) in enumerate(cv.split(level1_features, y_train)):
-                X_meta_train = level1_features.iloc[train_idx]
-                X_meta_valid = level1_features.iloc[valid_idx]
-                y_meta_train = y_train.iloc[train_idx]
-                y_meta_valid = y_train.iloc[valid_idx]
                 
-                # メタモデル訓練
-                meta_model.fit(X_meta_train, y_meta_train)
+                # 全体スコア計算
+                overall_score = accuracy_score(y_train, (oof_preds >= 0.5).astype(int))
+                print(f"    {name} スコア: {overall_score:.6f} (±{np.std(fold_scores):.6f})")
                 
-                # 予測
-                if hasattr(meta_model, 'predict_proba'):
-                    meta_preds = meta_model.predict_proba(X_meta_valid)[:, 1]
-                else:
-                    meta_preds = meta_model.predict(X_meta_valid)
-                
-                # スコア計算
-                fold_score = accuracy_score(y_meta_valid, (meta_preds >= 0.5).astype(int))
-                fold_scores.append(fold_score)
-                print(f"  Fold {fold+1}: {fold_score:.6f}")
+                # 結果保存
+                oof_predictions[name] = oof_preds
+                test_predictions[name] = test_preds
+                model_scores[name] = overall_score
             
-            # メタモデルのスコア
-            meta_score = np.mean(fold_scores)
-            meta_scores[name] = {
-                'score': meta_score,
-                'std': np.std(fold_scores)
+            level1_results[cv_name] = {
+                'oof': oof_predictions,
+                'test': test_predictions,
+                'scores': model_scores
             }
-            print(f"  {name} 全体スコア: {meta_score:.6f} (±{np.std(fold_scores):.6f})")
         
-        # 最良のメタモデルを選択
-        best_meta = max(meta_scores.items(), key=lambda x: x[1]['score'])
-        print(f"\n最良メタモデル: {best_meta[0]} ({best_meta[1]['score']:.6f})")
-        
-        # 最良メタモデルで全データを訓練
-        best_meta_model = self.level2_models[best_meta[0]]
-        best_meta_model.fit(level1_features, y_train)
-        
-        return best_meta_model, meta_scores, best_meta[0]
-    
-    def advanced_ensemble_techniques(self, oof_predictions, y_train):
-        """高度アンサンブル技術"""
-        print(f"\n=== 高度アンサンブル技術 ===")
-        
-        results = {}
-        
-        # 1. 単純平均
-        simple_avg = np.mean(oof_predictions, axis=1)
-        simple_score = accuracy_score(y_train, (simple_avg >= 0.5).astype(int))
-        results['simple_average'] = simple_score
-        print(f"単純平均: {simple_score:.6f}")
-        
-        # 2. 重み付き平均（性能ベース）
-        model_names = list(self.level1_models.keys())
-        weights = []
-        for name in model_names:
-            if name in self.oof_predictions:
-                pred = self.oof_predictions[name]
-                score = accuracy_score(y_train, (pred >= 0.5).astype(int))
-                weights.append(score)
-            else:
-                weights.append(0.5)
-        
-        weights = np.array(weights)
-        weights = weights / np.sum(weights)  # 正規化
-        
-        weighted_avg = np.average(oof_predictions, axis=1, weights=weights)
-        weighted_score = accuracy_score(y_train, (weighted_avg >= 0.5).astype(int))
-        results['weighted_average'] = weighted_score
-        print(f"重み付き平均: {weighted_score:.6f}")
-        
-        # 3. ランクアベレージング
-        rank_avg = np.mean(stats.rankdata(oof_predictions, axis=0), axis=1)
-        rank_avg = (rank_avg - rank_avg.min()) / (rank_avg.max() - rank_avg.min())  # 正規化
-        rank_score = accuracy_score(y_train, (rank_avg >= 0.5).astype(int))
-        results['rank_average'] = rank_score
-        print(f"ランク平均: {rank_score:.6f}")
-        
-        # 4. 動的重み付け（予測値に応じて重みを調整）
-        dynamic_preds = np.zeros(len(oof_predictions))
-        for i in range(len(oof_predictions)):
-            row_preds = oof_predictions[i, :]
-            # 予測値の分散を重みとする
-            pred_std = np.std(row_preds)
-            if pred_std > 0:
-                # 分散が大きい場合は単純平均
-                dynamic_preds[i] = np.mean(row_preds)
-            else:
-                # 分散が小さい場合は最高性能モデルの予測を重視
-                best_idx = np.argmax(weights)
-                dynamic_preds[i] = row_preds[best_idx]
-        
-        dynamic_score = accuracy_score(y_train, (dynamic_preds >= 0.5).astype(int))
-        results['dynamic_weighting'] = dynamic_score
-        print(f"動的重み付け: {dynamic_score:.6f}")
-        
-        return results
-    
-    def run_advanced_ensemble(self):
-        """高度アンサンブル全体実行"""
-        print("=== 高度アンサンブル手法実行 ===\n")
-        
-        # 1. データ読み込み
-        X_train, y_train, X_test = self.load_enhanced_data()
-        
-        # 2. 多様なモデル設定
-        self.setup_diverse_models()
-        
-        # 3. レベル1モデル訓練
-        oof_predictions, level1_scores = self.train_level1_models(X_train, y_train)
-        
-        # 4. レベル2アンサンブル
-        best_meta_model, meta_scores, best_meta_name = self.train_level2_ensemble(
-            oof_predictions, y_train
-        )
-        
-        # 5. 高度アンサンブル技術
-        ensemble_results = self.advanced_ensemble_techniques(oof_predictions, y_train)
-        
-        # 6. 結果まとめ
-        print(f"\n=== 最終結果まとめ ===")
-        
-        # 最良の単一モデル
-        best_single = max(level1_scores.items(), key=lambda x: x[1]['score'])
-        print(f"最良単一モデル: {best_single[0]} ({best_single[1]['score']:.6f})")
-        
-        # 最良メタモデル
-        best_meta_score = meta_scores[best_meta_name]['score']
-        print(f"最良メタモデル: {best_meta_name} ({best_meta_score:.6f})")
-        
-        # 最良アンサンブル手法
-        best_ensemble = max(ensemble_results.items(), key=lambda x: x[1])
-        print(f"最良アンサンブル: {best_ensemble[0]} ({best_ensemble[1]:.6f})")
-        
-        # 改善効果
-        baseline_score = best_single[1]['score']
-        final_score = max(best_meta_score, best_ensemble[1])
-        improvement = final_score - baseline_score
-        
-        print(f"\n最終スコア: {final_score:.6f}")
-        print(f"ベースラインからの改善: {improvement:+.6f}")
-        print(f"目標0.975708まで: {0.975708 - final_score:+.6f}")
-        
-        return {
-            'level1_scores': level1_scores,
-            'meta_scores': meta_scores,
-            'ensemble_results': ensemble_results,
-            'final_score': final_score,
-            'improvement': improvement
-        }
-
-if __name__ == "__main__":
-    ensemble = AdvancedEnsemble()
-    results = ensemble.run_advanced_ensemble()
+        return level1_results\n    \n    def create_level2_ensemble(self, level1_results, y_train):\n        \"\"\"Level 2メタ学習アンサンブル\"\"\"\n        print(\"\\n=== Level 2 メタ学習アンサンブル ===\")\n        \n        best_ensemble_results = {}\n        \n        for cv_name, results in level1_results.items():\n            print(f\"\\n--- {cv_name} によるLevel 2アンサンブル ---\")\n            \n            # OOF予測をDataFrameに変換\n            oof_df = pd.DataFrame(results['oof'])\n            test_df = pd.DataFrame(results['test'])\n            \n            print(f\"メタ学習データ形状: {oof_df.shape}\")\n            \n            # 複数のメタ学習戦略\n            meta_strategies = {\n                'simple_mean': lambda x: x.mean(axis=1),\n                'weighted_mean': self._create_weighted_ensemble,\n                'logistic_meta': self._create_logistic_meta_model,\n                'ridge_meta': self._create_ridge_meta_model\n            }\n            \n            strategy_results = {}\n            \n            for strategy_name, strategy_func in meta_strategies.items():\n                try:\n                    if strategy_name in ['simple_mean']:\n                        final_oof = strategy_func(oof_df)\n                        final_test = strategy_func(test_df)\n                    else:\n                        final_oof, final_test = strategy_func(oof_df, test_df, y_train)\n                    \n                    # スコア計算\n                    score = accuracy_score(y_train, (final_oof >= 0.5).astype(int))\n                    print(f\"  {strategy_name}: {score:.6f}\")\n                    \n                    strategy_results[strategy_name] = {\n                        'oof': final_oof,\n                        'test': final_test,\n                        'score': score\n                    }\n                except Exception as e:\n                    print(f\"  {strategy_name}: エラー ({str(e)})\")\n                    continue\n            \n            # 最高スコアの戦略を選択\n            if strategy_results:\n                best_strategy = max(strategy_results.keys(), key=lambda k: strategy_results[k]['score'])\n                best_score = strategy_results[best_strategy]['score']\n                best_test_preds = strategy_results[best_strategy]['test']\n                \n                print(f\"  最適戦略: {best_strategy} (スコア: {best_score:.6f})\")\n                \n                best_ensemble_results[cv_name] = {\n                    'strategy': best_strategy,\n                    'score': best_score,\n                    'test': best_test_preds\n                }\n        \n        return best_ensemble_results\n    \n    def _create_weighted_ensemble(self, oof_df, test_df, y_train):\n        \"\"\"重み付きアンサンブル\"\"\"\n        # 各モデルのスコアベースで重み計算\n        model_scores = []\n        for col in oof_df.columns:\n            score = accuracy_score(y_train, (oof_df[col] >= 0.5).astype(int))\n            model_scores.append(score)\n        \n        # スコアを重みに変換（正規化）\n        weights = np.array(model_scores)\n        weights = weights / weights.sum()\n        \n        # 重み付き平均\n        final_oof = np.average(oof_df.values, axis=1, weights=weights)\n        final_test = np.average(test_df.values, axis=1, weights=weights)\n        \n        return final_oof, final_test\n    \n    def _create_logistic_meta_model(self, oof_df, test_df, y_train):\n        \"\"\"ロジスティック回帰メタモデル\"\"\"\n        meta_model = LogisticRegression(\n            C=1.0, \n            max_iter=1000, \n            random_state=self.config['RANDOM_STATE']\n        )\n        \n        # メタモデル訓練\n        meta_model.fit(oof_df, y_train)\n        \n        # 最終予測\n        final_oof = meta_model.predict_proba(oof_df)[:, 1]\n        final_test = meta_model.predict_proba(test_df)[:, 1]\n        \n        return final_oof, final_test\n    \n    def _create_ridge_meta_model(self, oof_df, test_df, y_train):\n        \"\"\"リッジ回帰メタモデル\"\"\"\n        from sklearn.linear_model import Ridge\n        \n        meta_model = Ridge(\n            alpha=1.0,\n            random_state=self.config['RANDOM_STATE']\n        )\n        \n        # メタモデル訓練\n        meta_model.fit(oof_df, y_train)\n        \n        # 最終予測（確率に変換）\n        final_oof = meta_model.predict(oof_df)\n        final_test = meta_model.predict(test_df)\n        \n        # [0,1]に正規化\n        final_oof = np.clip(final_oof, 0, 1)\n        final_test = np.clip(final_test, 0, 1)\n        \n        return final_oof, final_test\n    \n    def select_final_ensemble(self, best_ensemble_results):\n        \"\"\"最終アンサンブルの選択\"\"\"\n        print(\"\\n=== 最終アンサンブル選択 ===\")\n        \n        # 全戦略から最高スコアを選択\n        best_overall = None\n        best_score = 0\n        best_predictions = None\n        \n        for cv_name, results in best_ensemble_results.items():\n            if results['score'] > best_score:\n                best_score = results['score']\n                best_overall = f\"{cv_name}_{results['strategy']}\"\n                best_predictions = results['test']\n        \n        print(f\"最終選択: {best_overall}\")\n        print(f\"最終スコア: {best_score:.6f}\")\n        print(f\"GMベースライン(0.975708)との差: {best_score - 0.975708:+.6f}\")\n        \n        return best_predictions, best_score, best_overall\n    \n    def create_submission(self, predictions, test_ids, method_name):\n        \"\"\"提出ファイル作成\"\"\"\n        print(\"\\n=== 提出ファイル作成 ===\")\n        \n        # 予測を二値分類に変換\n        binary_preds = (predictions >= 0.5).astype(int)\n        \n        # ラベルを文字列に変換\n        reverse_mapping = {v: k for k, v in self.config['TARGET_MAPPING'].items()}\n        string_preds = [reverse_mapping[pred] for pred in binary_preds]\n        \n        # 提出DataFrame作成\n        submission = pd.DataFrame({\n            'id': test_ids,\n            'Personality': string_preds\n        })\n        \n        # 保存\n        filename = f'advanced_ensemble_{method_name.replace(\"_\", \"-\")}.csv'\n        submission_path = self.config['OUTPUT_PATH'] / filename\n        submission.to_csv(submission_path, index=False)\n        \n        print(f\"提出ファイル保存: {submission_path}\")\n        print(f\"予測分布:\")\n        print(submission['Personality'].value_counts())\n        \n        return submission\n    \n    def run_advanced_ensemble(self):\n        \"\"\"高度アンサンブルフルパイプライン実行\"\"\"\n        print(\"=== 高度アンサンブルパイプライン開始 ===\")\n        \n        # 1. データ読み込み\n        X_train, y_train, X_test, train_ids, test_ids = self.load_revolutionary_data()\n        \n        # 2. 多様なモデル設定\n        models = self.setup_diverse_models()\n        \n        # 3. Level 1モデル訓練\n        level1_results = self.train_level1_models(X_train, y_train, X_test, models)\n        \n        # 4. Level 2アンサンブル\n        best_ensemble_results = self.create_level2_ensemble(level1_results, y_train)\n        \n        # 5. 最終アンサンブル選択\n        final_predictions, final_score, method_name = self.select_final_ensemble(best_ensemble_results)\n        \n        # 6. 提出ファイル作成\n        submission = self.create_submission(final_predictions, test_ids, method_name)\n        \n        print(f\"\\n=== 高度アンサンブル完了 ===\")\n        print(f\"最終結果: {final_score:.6f} ({method_name})\")\n        \n        return submission, final_score\n\nif __name__ == \"__main__\":\n    ensemble = AdvancedEnsemble()\n    submission, score = ensemble.run_advanced_ensemble()

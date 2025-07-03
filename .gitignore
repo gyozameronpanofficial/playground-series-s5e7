@@ -128,6 +128,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Project virtual environment
+/venv/
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -195,12 +198,15 @@ fabric.properties
 # Large data files
 data/processed/*_ngrams.csv
 data/processed/*_ngram*.csv
+data/processed/*_features.csv
+data/processed/pseudo_labeled_*.csv
+data/processed/hybrid_*.csv
 *.csv.gz
 *.pkl
 *.pickle
 
-# Submission files (keep private)
-submissions/
+# Submission files (keep private - only root submissions folder)
+/submissions/
 !submissions/.gitkeep
 
 # Model files

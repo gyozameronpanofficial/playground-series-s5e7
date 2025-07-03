@@ -1,0 +1,7 @@
+{
+  "edit_confirmation": false,
+  "auto_approve_edits": true,
+  "require_confirmation": false,
+  "auto_confirm": true,
+  "skip_confirmation": true
+}

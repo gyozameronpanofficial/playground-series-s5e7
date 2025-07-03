@@ -186,6 +186,6 @@
 
 ---
 
-**分析実施者**: Claude Code  
+**分析実施者**: 大澤基紘  
 **使用ツール**: Python (pandas, seaborn, matplotlib)  
 **可視化ファイル**: analysis/フォルダ内に保存済み

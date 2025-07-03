@@ -1,0 +1,124 @@
+{
+  "categorical_issue": true,
+  "data_quality": {
+    "missing_features": 0,
+    "categorical_features": 12,
+    "duplicate_rows": 0,
+    "total_features": 61
+  },
+  "noise_features_issue": false,
+  "feature_importance": {
+    "top_features": [
+      {
+        "feature": "Drained_after_socializing",
+        "importance": 0.12341960253197587
+      },
+      {
+        "feature": "Stage_fear_Drained_after_socializing_Time_spent_Alone_Social_event_attendance_4gram",
+        "importance": 0.11055424221128718
+      },
+      {
+        "feature": "Time_spent_Alone",
+        "importance": 0.08945502158551517
+      },
+      {
+        "feature": "Stage_fear",
+        "importance": 0.08473232561788474
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Post_frequency_4gram",
+        "importance": 0.07915447460644062
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Stage_fear_4gram",
+        "importance": 0.04051528047575807
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Post_frequency_Stage_fear_5gram_tfidf_1.0",
+        "importance": 0.03350588527394445
+      },
+      {
+        "feature": "Post_frequency",
+        "importance": 0.033440899312511395
+      },
+      {
+        "feature": "Time_spent_Alone_Stage_fear_Drained_after_socializing_Post_frequency_4gram",
+        "importance": 0.03258174761738939
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Post_frequency_Stage_fear_5gram",
+        "importance": 0.029942618390544323
+      }
+    ],
+    "bottom_features": [
+      {
+        "feature": "Time_spent_Alone_Social_event_attendance_Going_outside_Friends_circle_size_4gram_tfidf_11.0",
+        "importance": 0.0012156448425151931
+      },
+      {
+        "feature": "Time_spent_Alone_Stage_fear_Drained_after_socializing_Post_frequency_4gram_tfidf_10.0",
+        "importance": 0.0011383667165797738
+      },
+      {
+        "feature": "Time_spent_Alone_Social_event_attendance_Going_outside_Friends_circle_size_4gram_tfidf_10.0",
+        "importance": 0.001123199956386758
+      },
+      {
+        "feature": "Stage_fear_Drained_after_socializing_Time_spent_Alone_Social_event_attendance_4gram_tfidf_-1",
+        "importance": 0.0010993554173153847
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Stage_fear_4gram_tfidf_-1.0",
+        "importance": 0.001074098417957816
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Stage_fear_4gram_tfidf_-1",
+        "importance": 0.0010559347148722397
+      },
+      {
+        "feature": "Time_spent_Alone_Social_event_attendance_Stage_fear_Drained_after_socializing_4gram_tfidf_1.0",
+        "importance": 0.0008630798324795569
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Stage_fear_4gram_tfidf_10.0",
+        "importance": 0.0008128154301541122
+      },
+      {
+        "feature": "Social_event_attendance_Going_outside_Friends_circle_size_Post_frequency_4gram_tfidf_11.0",
+        "importance": 0.0007962398100179868
+      },
+      {
+        "feature": "Time_spent_Alone_Stage_fear_Social_event_attendance_Drained_after_socializing_Going_outside_5gram_tfidf_10.0",
+        "importance": 0.0005916653179736082
+      }
+    ],
+    "type_importance": {
+      "Original": 0.058210763689917906,
+      "4-gram": 0.05135262291581405,
+      "TF-IDF": 0.0046718432033137115,
+      "5-gram": 0.024725324175524394
+    },
+    "low_importance_ratio": 0.06557377049180328
+  },
+  "tfidf_sparsity_issue": true,
+  "multicollinearity_issue": true,
+  "correlation_analysis": {
+    "high_corr_pairs": 24,
+    "avg_correlation": 0.158167773080982
+  },
+  "tfidf_type_issue": false,
+  "root_causes": [
+    "\u274c \u30ab\u30c6\u30b4\u30ea\u30ab\u30eb\u7279\u5fb4\u91cf\u30a8\u30f3\u30b3\u30fc\u30c7\u30a3\u30f3\u30b0\u554f\u984c",
+    "\u274c TF-IDF\u7279\u5fb4\u91cf\u306e\u6975\u5ea6\u306a\u5e0c\u8584\u6027",
+    "\u274c \u591a\u91cd\u5171\u7dda\u6027\u554f\u984c"
+  ],
+  "improvements": [
+    "\ud83d\udd27 \u5168\u7279\u5fb4\u91cf\u306e\u9069\u5207\u306a\u6570\u5024\u30a8\u30f3\u30b3\u30fc\u30c7\u30a3\u30f3\u30b0\u5b9f\u88c5",
+    "\ud83d\udd27 TF-IDF\u6700\u5c0f\u6587\u66f8\u983b\u5ea6(min_df)\u306e\u8abf\u6574",
+    "\ud83d\udd27 \u76f8\u95a2\u30d5\u30a3\u30eb\u30bf\u30ea\u30f3\u30b0\u306b\u3088\u308b\u5197\u9577\u6027\u9664\u53bb",
+    "\ud83c\udfaf \u3088\u308a selective \u306a4-gram/5-gram\u9078\u629e",
+    "\ud83d\udcca \u7279\u5fb4\u91cf\u91cd\u8981\u5ea6\u306b\u57fa\u3065\u304f\u6bb5\u968e\u7684\u8ffd\u52a0",
+    "\ud83e\uddea \u5358\u4e00\u7279\u5fb4\u91cf\u30bf\u30a4\u30d7\u3067\u306e\u52b9\u679c\u691c\u8a3c",
+    "\u26a1 \u3088\u308a\u8efd\u91cf\u306a\u7279\u5fb4\u91cf\u30a8\u30f3\u30b8\u30cb\u30a2\u30ea\u30f3\u30b0\u624b\u6cd5\u306e\u691c\u8a0e"
+  ]
+}

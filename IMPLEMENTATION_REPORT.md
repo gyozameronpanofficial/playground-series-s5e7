@@ -271,7 +271,7 @@ python src/advanced_ensemble.py
 |------|----------|-------------|-------------|-------------|-------------|
 | ベースライン | 元データのみ | 0.969013 | - | - | **0.975708** |
 | フェーズ1+2 | 心理学特徴量+擬似ラベリング | **0.974211** | **0.980500+** | `psychological_pseudo_submission.csv` | **0.974898** |
-| **Phase 2a** | **4-gram/5-gram + TF-IDF重み付け** | **[測定予定]** | **[算出予定]** | **[作成予定]** | **[記載待ち]** |
+| **Phase 2a** | **4-gram/5-gram + TF-IDF重み付け** | **0.968851** | **0.974500** | **phase2a_ngram_tfidf_submission.csv** | **[記載待ち]** |
 | **Phase 2b** | **高度Target Encoding** | **[測定予定]** | **[算出予定]** | **[作成予定]** | **[記載待ち]** |
 | **Phase 2c** | **特徴量選択最適化** | **[測定予定]** | **[算出予定]** | **[作成予定]** | **[記載待ち]** |
 | フェーズ1+2+3 | 全手法統合 | [測定予定] | **0.983000+** | [作成予定] | [記載待ち] |
@@ -353,8 +353,17 @@ python src/advanced_ensemble.py
 - **統合期待**: +0.003-0.005
 
 #### 実装ファイル
-- `src/advanced_ngram_features.py` (新規作成)
-- 既存の`src/psychological_features.py`を拡張
+- `src/advanced_ngram_features.py` ✅ **実装完了**
+- `src/phase2a_cv_evaluation.py` ✅ **CV評価完了**
+- `src/phase2a_submission.py` ✅ **提出ファイル作成完了**
+
+#### 実装結果
+- **追加特徴量数**: 54個 (7→61個)
+- **4-gram特徴量**: 6個
+- **5-gram特徴量**: 3個  
+- **TF-IDF特徴量**: 45個
+- **実測CVスコア**: 0.968851 (ベースライン比 -0.000162)
+- **ステータス**: ❌ **期待効果未達成**
 
 ### Phase 2b: 高度Target Encoding実装
 
@@ -399,11 +408,11 @@ python src/advanced_ensemble.py
 ### 📊 Progress Tracking
 
 #### Phase 2a 進捗
-- [ ] 4-gram特徴量実装
-- [ ] 5-gram特徴量実装  
-- [ ] TF-IDF重み付け実装
-- [ ] CV性能測定
-- [ ] 提出ファイル作成
+- [x] 4-gram特徴量実装
+- [x] 5-gram特徴量実装  
+- [x] TF-IDF重み付け実装
+- [x] CV性能測定
+- [x] 提出ファイル作成
 - [ ] PB結果記録
 
 #### Phase 2b 進捗

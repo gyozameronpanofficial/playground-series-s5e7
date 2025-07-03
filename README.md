@@ -623,7 +623,7 @@ git push origin feature/your-feature
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![Kaggle Competition](https://img.shields.io/badge/Kaggle-Competition-20BEFF.svg)](https://www.kaggle.com/competitions/playground-series-s5e7)
 
-**Created by**: [Your Team Name]  
+**Created by**: Osawa
 **Date**: 2025年7月  
 **Competition**: Playground Series S5E7
 

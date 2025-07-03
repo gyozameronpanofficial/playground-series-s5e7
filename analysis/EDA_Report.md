@@ -186,6 +186,6 @@
 
 ---
 
-**分析実施者**: 大澤基紘  
+**分析実施者**: Osawa  
 **使用ツール**: Python (pandas, seaborn, matplotlib)  
 **可視化ファイル**: notebooks/EDA_Analysis.ipynbに保存済み

@@ -3,7 +3,7 @@
 **プロジェクト**: Kaggle Playground Series S5E7  
 **目標**: GMベースライン (0.975708) 超越  
 **実装日**: 2025-07-02  
-**実装者**: Claude Code Team
+**実装者**: Osawa
 
 ---
 

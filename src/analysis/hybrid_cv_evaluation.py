@@ -139,17 +139,53 @@ def evaluate_hybrid_performance():
         model = create_hybrid_ensemble()
         
         if data_info['sample_weight'] is not None:
-            # 重み付きCV（手動実装が必要）
+            # 重み付きCV（手動実装 - sample_weight対応）
             cv_scores = []
-            X, y = data_info['X'], data_info['y']
+            X, y, sample_weights = data_info['X'], data_info['y'], data_info['sample_weight']
             
             for train_idx, valid_idx in cv.split(X, y):
                 X_train, X_valid = X[train_idx], X[valid_idx]
                 y_train, y_valid = y[train_idx], y[valid_idx]
+                sw_train = sample_weights[train_idx]  # 訓練用重み
                 
-                model_copy = create_hybrid_ensemble()
-                model_copy.fit(X_train, y_train)
-                valid_pred = model_copy.predict(X_valid)
+                # VotingClassifierではなく個別モデルでアンサンブルを実装
+                from sklearn.ensemble import VotingClassifier
+                import lightgbm as lgb
+                import xgboost as xgb
+                from catboost import CatBoostClassifier
+                from sklearn.linear_model import LogisticRegression
+                
+                # 各モデルを個別に学習（sample_weight対応）
+                lgb_model = lgb.LGBMClassifier(
+                    objective='binary', num_leaves=31, learning_rate=0.05,
+                    n_estimators=500, random_state=42, verbosity=-1
+                )
+                xgb_model = xgb.XGBClassifier(
+                    objective='binary:logistic', max_depth=6, learning_rate=0.05,
+                    n_estimators=500, random_state=42, verbosity=0
+                )
+                cat_model = CatBoostClassifier(
+                    objective='Logloss', depth=6, learning_rate=0.05,
+                    iterations=500, random_seed=42, verbose=False
+                )
+                lr_model = LogisticRegression(random_state=42, max_iter=1000)
+                
+                # 各モデルにsample_weightを適用して学習
+                lgb_model.fit(X_train, y_train, sample_weight=sw_train)
+                xgb_model.fit(X_train, y_train, sample_weight=sw_train)
+                cat_model.fit(X_train, y_train, sample_weight=sw_train)
+                lr_model.fit(X_train, y_train, sample_weight=sw_train)
+                
+                # 予測を平均（ソフトボーティング相当）
+                lgb_pred = lgb_model.predict_proba(X_valid)[:, 1]
+                xgb_pred = xgb_model.predict_proba(X_valid)[:, 1] 
+                cat_pred = cat_model.predict_proba(X_valid)[:, 1]
+                lr_pred = lr_model.predict_proba(X_valid)[:, 1]
+                
+                # アンサンブル予測（ソフトボーティング）
+                ensemble_pred_proba = (lgb_pred + xgb_pred + cat_pred + lr_pred) / 4
+                valid_pred = (ensemble_pred_proba > 0.5).astype(int)
+                
                 score = accuracy_score(y_valid, valid_pred)
                 cv_scores.append(score)
             

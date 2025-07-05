@@ -1,0 +1,17 @@
+{
+  "phase4_ensemble_cv": 0.9787146950470733,
+  "phase4_ensemble_std": 0.0009334223701179989,
+  "phase4_individual_models": {
+    "lgb": 0.9775276299631601,
+    "xgb": 0.9777322963569383,
+    "cat": 0.9790421612771183,
+    "lr": 0.978100695865739
+  },
+  "phase4_feature_count": 41,
+  "phase4_sample_count": 24430,
+  "phase4_pseudo_ratio": 0.31882962643057655,
+  "phase3_baseline": 0.976404,
+  "improvement_vs_phase3": 0.0023106950470732635,
+  "evaluation_date": "2025-07-04",
+  "methodology": "sample_weight_supported_cv"
+}

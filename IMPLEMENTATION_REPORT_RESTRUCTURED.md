@@ -22,9 +22,9 @@
 | **ベースライン** | GM公開実装（2-gram/3-gram + Target Encoding + 5モデルアンサンブル） | *未実装* | 0.969013 | 0.975708 | +0.006695 | ±0.000000 | GM基準 |
 | **フェーズ1+2** | 心理学特徴量+擬似ラベリング | **`Kaggle_Phase1Plus2_Psychology_Pseudo_Complete.ipynb`** | **0.974211** | 0.974898 | +0.000687 | -0.000810 | ❌ GM未達 |
 | **Phase 2a** | 4-gram/5-gram + TF-IDF | **`Kaggle_Phase2A_Complete_Implementation.ipynb`** | 0.968851 | 0.974898 | +0.006047 | -0.000810 | ❌ GM未達 |
-| **Phase 2b** | 高度Target Encoding | *未作成* | 0.968905 | **0.975708** | +0.006803 | ±0.000000 | ✅ **GM同値** |
+| **Phase 2b** | 高度Target Encoding | **`Kaggle_Phase2B_Target_Encoding_Complete.ipynb`** | 0.968905 | **0.975708** | +0.006803 | ±0.000000 | ✅ **GM同値** |
 | **統合版** | Phase 2b + フェーズ1+2統合 | **`Kaggle_Hybrid_Integration_Complete_Best.ipynb`** ⭐ | **0.976404** | **0.975708** | -0.000696 | ±0.000000 | ✅ **GM同値** |
-| **Phase 4** | 拡張統合版（41特徴量） | *未作成* | **🏆 0.978715** | **❌ 0.919028** | **-0.059687** | **-0.056680** | ❌ **大幅性能低下** |
+| **Phase 4** | 拡張統合版（41特徴量） | **`Kaggle_Phase4_Enhanced_Integration_Complete.ipynb`** ⚠️ | **🏆 0.978715** | **❌ 0.919028** | **-0.059687** | **-0.056680** | ❌ **大幅性能低下** |
 
 ### 🎯 重要な発見
 - **Phase 2b（Target Encoding）**と**統合版**がGMベースライン **0.975708** を達成
@@ -206,6 +206,11 @@ df.fillna(0)
 src/phases/phase3_hybrid_integration.py      # 特徴量エンジニアリング
 src/analysis/hybrid_cv_evaluation.py        # CV評価（sample_weight対応）
 src/submissions/hybrid_submission.py        # 提出ファイル
+
+# Kaggle完全版ノートブック
+notebooks/kaggle_complete/Kaggle_Hybrid_Integration_Complete_Best.ipynb  # 統合版（推奨）
+notebooks/kaggle_complete/Kaggle_Phase2B_Target_Encoding_Complete.ipynb  # Phase 2b
+notebooks/kaggle_complete/Kaggle_Phase4_Enhanced_Integration_Complete.ipynb  # Phase 4（教育用）
 ```
 
 #### 技術スペック
@@ -293,7 +298,10 @@ final_prediction = (lgb + xgb + cat + lr) / 4
 
 ### 技術的資産
 1. **成功手法**: Phase 2b, Phase 3の再利用可能実装
+   - `Kaggle_Phase2B_Target_Encoding_Complete.ipynb` (GM同値達成手法)
+   - `Kaggle_Hybrid_Integration_Complete_Best.ipynb` (最終推奨統合版)
 2. **失敗事例**: Phase 4の過学習パターン記録
+   - `Kaggle_Phase4_Enhanced_Integration_Complete.ipynb` (教育用過学習事例)
 3. **評価体系**: sample_weight対応CV評価システム
 4. **知見蓄積**: 特徴量設計、前処理、アンサンブルのベストプラクティス
 

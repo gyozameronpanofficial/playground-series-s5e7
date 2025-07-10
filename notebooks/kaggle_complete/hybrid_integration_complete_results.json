@@ -1,0 +1,16 @@
+{
+  "implementation": "Hybrid Integration - Best Performance",
+  "final_results": {
+    "approach": "Hybrid Integration (Psychology + Target Encoding + Pseudo-Labeling)",
+    "best_cv_score": 0.976436738349251,
+    "best_method": "hybrid_with_pseudo",
+    "gm_baseline": 0.975708,
+    "gm_status": "exceeded",
+    "total_improvement": 0.007585396254189525,
+    "feature_contribution": -5.3995680345364505e-05,
+    "pseudo_contribution": 0.007639391934534889,
+    "all_results": {
+      "baseline": {
+        "cv_mean": 0.9688513420950615,
+        "cv_std": 0.0019339832484980878,
+        "cv_scores": 
